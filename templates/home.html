@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <h1>Complaint Management System</h1>
+  <p>Raise, track and resolve complaints easily.</p>
+
+  <div class="hero-actions">
+    {% if current_user.is_authenticated %}
+      {% if current_user.is_admin %}
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary">
+          Manage All Complaints
+        </a>
+      {% else %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+          Go to Dashboard
+        </a>
+        <a href="{{ url_for('new_complaint') }}" class="btn btn-outline">
+          New Complaint
+        </a>
+      {% endif %}
+    {% else %}
+      <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+      <a href="{{ url_for('register') }}" class="btn btn-outline">Register</a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+

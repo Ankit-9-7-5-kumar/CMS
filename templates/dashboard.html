@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="page-title">User Dashboard</h2>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <p>Total Complaints</p>
+    <h3>{{ total }}</h3>
+  </div>
+
+  <div class="stat-card">
+    <p>Pending</p>
+    <h3>{{ pending }}</h3>
+  </div>
+
+  <div class="stat-card">
+    <p>In Progress</p>
+    <h3>{{ in_progress }}</h3>
+  </div>
+
+  <div class="stat-card">
+    <p>Resolved</p>
+    <h3>{{ resolved }}</h3>
+  </div>
+</div>
+
+<div class="action-buttons">
+  <a href="/complaint/new" class="btn primary">New Complaint</a>
+  <a href="/complaints" class="btn secondary">My Complaints</a>
+</div>
+{% endblock %}
+
