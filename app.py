@@ -148,8 +148,9 @@ def dashboard():
 @app.route("/complaint/new", methods=["GET", "POST"])
 @login_required
 def new_complaint():
-    form = ComplaintForm()
+    print("CURRENT USER:", current_user.id)
 
+    form = ComplaintForm()
     if form.validate_on_submit():
         complaint = Complaint(
             title=form.title.data,
@@ -160,7 +161,6 @@ def new_complaint():
         db.session.add(complaint)
         db.session.commit()
 
-        flash("Complaint submitted successfully", "success")
         return redirect(url_for("my_complaints"))
 
     return render_template("new_complaint.html", form=form)
