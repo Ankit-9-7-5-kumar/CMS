@@ -173,6 +173,47 @@ def resolve_complaint(id):
     db.session.commit()
     return redirect(url_for("admin_dashboard"))
 
+@app.route("/complaint/<int:id>/in-progress")
+@login_required
+def mark_in_progress(id):
+    if not current_user.is_admin:
+        abort(403)
+
+    complaint = Complaint.query.get_or_404(id)
+    complaint.status = "In Progress"
+    db.session.commit()
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/complaint/<int:id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_complaint(id):
+    complaint = Complaint.query.get_or_404(id)
+
+    if complaint.user_id != current_user.id:
+        abort(403)
+
+    form = ComplaintForm(obj=complaint)
+    if form.validate_on_submit():
+        complaint.title = form.title.data
+        complaint.description = form.description.data
+        db.session.commit()
+        return redirect(url_for("my_complaints"))
+
+    return render_template("edit_complaint.html", form=form)
+
+
+@app.route("/complaint/<int:id>/delete")
+@login_required
+def delete_complaint(id):
+    complaint = Complaint.query.get_or_404(id)
+
+    if complaint.user_id != current_user.id:
+        abort(403)
+
+    db.session.delete(complaint)
+    db.session.commit()
+    return redirect(url_for("my_complaints"))
 
 
 
