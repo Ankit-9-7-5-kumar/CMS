@@ -1,4 +1,3 @@
-from datetime import datetime
 from extensions import db
 from flask_login import UserMixin
 from datetime import datetime
@@ -13,8 +12,6 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    complaints = db.relationship("Complaint", backref="user", lazy=True)
-
 
 class Complaint(db.Model):
     __tablename__ = "complaints"
@@ -22,19 +19,11 @@ class Complaint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
-
     status = db.Column(db.String(50), default="Pending")
 
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey("users.id"),
-        nullable=False
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
-    created_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
-
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     resolved_at = db.Column(db.DateTime, nullable=True)
     resolve_note = db.Column(db.Text, nullable=True)
+
