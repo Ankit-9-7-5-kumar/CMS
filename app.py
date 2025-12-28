@@ -22,9 +22,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
     "sqlite:///local.db"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-@app.before_first_request
-def create_tables():
-    db.create_all()
+
 
 # -------------------------
 # INIT EXTENSIONS (ONLY ONCE)
