@@ -6,12 +6,13 @@
 <form method="POST">
     {{ form.hidden_tag() }}
 
-    {{ form.title.label }}<br>
-    {{ form.title }}<br><br>
+    <label>Title</label>
+    {{ form.title(class="form-control") }}
 
-    {{ form.description.label }}<br>
-    {{ form.description }}<br><br>
+    <label>Description</label>
+    {{ form.description(class="form-control") }}
 
-    {{ form.submit }}
+    <button type="submit">Submit</button>
 </form>
+
 {% endblock %}
