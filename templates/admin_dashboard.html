@@ -49,11 +49,11 @@
 
   {% if c.status != "Resolved" %}
     <div class="actions" style="margin-top:10px;">
-      <a href="{{ url_for('mark_in_progress', id=c.id) }}">In Progress</a>
+      <a href="{{ url_for('mark_in_progress', complaint_id=c.id) }}">In Progress</a>
     </div>
 
     <form method="POST"
-          action="{{ url_for('resolve_complaint', complaint_id=c.id) }}"
+          action="{{ url_for('resolve_complaint', id=c.id) }}"
           style="margin-top:10px;">
       <textarea name="note"
         placeholder="Resolve note"
