@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -130,61 +130,7 @@ def my_complaints():
 
     return render_template("complaints.html", complaints=complaints)
 
-# ---------------- ADMIN DASHBOARD ----------------
-@app.route("/admin")
-@login_required
-def admin_dashboard():
-    if not current_user.is_admin:
-        flash("Admin only", "danger")
-        return redirect(url_for("dashboard"))
-
-    return render_template(
-        "admin_dashboard.html",
-        complaints=Complaint.query.order_by(Complaint.created_at.desc()).all(),
-        total_users=User.query.count(),
-        total_complaints=Complaint.query.count(),
-        pending=Complaint.query.filter_by(status="Pending").count(),
-        in_progress=Complaint.query.filter_by(status="In Progress").count(),
-        resolved=Complaint.query.filter_by(status="Resolved").count()
-    )
-
-# ---------------- ADMIN ACTIONS ----------------
-@app.route("/admin/complaint/<int:id>/progress")
-@login_required
-def mark_in_progress(id):
-    if not current_user.is_admin:
-        return redirect(url_for("dashboard"))
-
-    c = Complaint.query.get_or_404(id)
-    c.status = "In Progress"
-    db.session.commit()
-    return redirect(url_for("admin_dashboard"))
-
-@app.route("/admin/complaint/<int:id>/resolve", methods=["POST"])
-@login_required
-def resolve_complaint(id):
-    if not current_user.is_admin:
-        return redirect(url_for("dashboard"))
-
-    c = Complaint.query.get_or_404(id)
-    c.status = "Resolved"
-    c.resolve_note = request.form.get("note")
-    c.resolved_at = datetime.utcnow()
-    db.session.commit()
-    return redirect(url_for("admin_dashboard"))
-
-@app.route("/complaint/<int:id>/in-progress")
-@login_required
-def mark_in_progress(id):
-    if not current_user.is_admin:
-        abort(403)
-
-    complaint = Complaint.query.get_or_404(id)
-    complaint.status = "In Progress"
-    db.session.commit()
-    return redirect(url_for("admin_dashboard"))
-
-
+# ---------------- EDIT COMPLAINT ----------------
 @app.route("/complaint/<int:id>/edit", methods=["GET", "POST"])
 @login_required
 def edit_complaint(id):
@@ -202,7 +148,7 @@ def edit_complaint(id):
 
     return render_template("edit_complaint.html", form=form)
 
-
+# ---------------- DELETE COMPLAINT ----------------
 @app.route("/complaint/<int:id>/delete")
 @login_required
 def delete_complaint(id):
@@ -215,6 +161,44 @@ def delete_complaint(id):
     db.session.commit()
     return redirect(url_for("my_complaints"))
 
+# ---------------- ADMIN DASHBOARD ----------------
+@app.route("/admin")
+@login_required
+def admin_dashboard():
+    if not current_user.is_admin:
+        abort(403)
 
+    return render_template(
+        "admin_dashboard.html",
+        complaints=Complaint.query.order_by(Complaint.created_at.desc()).all(),
+        total_users=User.query.count(),
+        total_complaints=Complaint.query.count(),
+        pending=Complaint.query.filter_by(status="Pending").count(),
+        in_progress=Complaint.query.filter_by(status="In Progress").count(),
+        resolved=Complaint.query.filter_by(status="Resolved").count()
+    )
 
+# ---------------- ADMIN ACTIONS ----------------
+@app.route("/admin/complaint/<int:id>/progress")
+@login_required
+def mark_in_progress(id):
+    if not current_user.is_admin:
+        abort(403)
 
+    c = Complaint.query.get_or_404(id)
+    c.status = "In Progress"
+    db.session.commit()
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/complaint/<int:id>/resolve", methods=["POST"])
+@login_required
+def resolve_complaint(id):
+    if not current_user.is_admin:
+        abort(403)
+
+    c = Complaint.query.get_or_404(id)
+    c.status = "Resolved"
+    c.resolve_note = request.form.get("note")
+    c.resolved_at = datetime.utcnow()
+    db.session.commit()
+    return redirect(url_for("admin_dashboard"))
