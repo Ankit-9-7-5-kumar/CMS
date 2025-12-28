@@ -140,13 +140,15 @@ def new_complaint():
 @app.route("/complaints")
 @login_required
 def my_complaints():
-    complaints = (
-        Complaint.query
-        .filter_by(user_id=current_user.id)
-        .order_by(Complaint.created_at.desc())
-        .all()
+    complaints = Complaint.query.filter_by(
+        user_id=current_user.id
+    ).order_by(Complaint.created_at.desc()).all()
+
+    return render_template(
+        "complaints.html",
+        complaints=complaints
     )
-    return render_template("complaints.html", complaints=complaints)
+
 
 
 # ---------------- ADMIN DASHBOARD ----------------
